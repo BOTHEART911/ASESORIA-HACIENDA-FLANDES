@@ -5,4 +5,4 @@
    es otro, esa apertura sale entera de la red (lo nuevo se ve a la
    primera). Formato: año.mes.día.consecutivo del día.
    ============================================================ */
-var APP_VERSION = "2026.10.25.1";
+var APP_VERSION = "2026.10.25.2";

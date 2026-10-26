@@ -20,7 +20,7 @@ var CACHE_NAME = 'asehac-v' + APP_VERSION;
 var RUTA_VERSION = new URL('./version.js', self.location.href).pathname;
 var BASE = new URL('./', self.location.href).pathname;
 var APP_SHELL = [
-  './', './index.html', './css/web.css', './js/marca.js', './js/web.js', './manifest.webmanifest',
+  './', './index.html', './css/web.css', './js/marca.js', './js/barrios.js', './js/web.js', './manifest.webmanifest',
   './img/icono-32.png', './img/icono-180.png', './img/icono-192.png', './img/icono-512.png', './img/icono-maskable-512.png'
 ];
 var ESPERA_VERSION_MS = 3000;

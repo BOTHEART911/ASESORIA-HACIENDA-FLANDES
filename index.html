@@ -95,8 +95,12 @@
             <input id="tel" inputmode="numeric" pattern="[0-9 .-]*" autocomplete="tel-national" placeholder="3XX XXX XXXX"></label>
           <label class="campo"><span>Confirma el celular</span>
             <input id="tel2" inputmode="numeric" pattern="[0-9 .-]*" autocomplete="off" placeholder="Escríbelo otra vez"></label>
-          <label class="campo"><span>¿Dónde está el predio o el comercio? (barrio, vereda o conjunto)</span>
-            <input id="ubic" maxlength="120" placeholder="Ej: Barrio Centro" class="mayus"></label>
+          <div class="campo"><label for="ubic">¿Dónde está el predio o el comercio? (barrio, vereda o conjunto)</label>
+            <div class="sugiere">
+              <input id="ubic" maxlength="120" placeholder="Escribe y escoge de la lista" class="mayus" autocomplete="off"
+                role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ubic-lista">
+              <ul class="sugiere__lista" id="ubic-lista" role="listbox" hidden></ul>
+            </div></div>
           <p class="error" id="p1-err" hidden></p>
         </div>
       </div>
@@ -191,6 +195,7 @@
   </div>
   <div class="aviso" id="aviso" role="status" hidden></div>
 
+  <script src="js/barrios.js"></script>
   <script src="js/web.js"></script>
 </body>
 </html>
