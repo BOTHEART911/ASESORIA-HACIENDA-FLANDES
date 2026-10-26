@@ -1,0 +1,18 @@
+{
+  "id": "/ASESORIA-HACIENDA-FLANDES/",
+  "name": "Asesoría telefónica · Hacienda Flandes",
+  "short_name": "Asesoría Hacienda",
+  "description": "Pide una llamada de la Secretaría de Hacienda de la Alcaldía de Flandes.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06402B",
+  "theme_color": "#06402B",
+  "icons": [
+    { "src": "img/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/icono-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

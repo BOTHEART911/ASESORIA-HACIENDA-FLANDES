@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Asesoría telefónica · Secretaría de Hacienda de Flandes</title>
+  <meta name="description" content="Pide una llamada de la Secretaría de Hacienda de la Alcaldía de Flandes: escoge el día y la hora y te llamamos.">
+  <meta name="theme-color" content="#06402B">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/icono-32.png">
+  <link rel="apple-touch-icon" href="img/icono-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://semaforo-hacienda-default-rtdb.firebaseio.com" crossorigin>
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
+  <link rel="stylesheet" href="css/web.css">
+  <script src="version.js"></script>
+  <script src="js/marca.js"></script>
+</head>
+<body>
+  <header class="cab">
+    <img class="cab__logo" src="img/icono-192.png" alt="" width="52" height="52">
+    <div class="cab__t">
+      <p class="cab__ent">Secretaría de Hacienda · Alcaldía de Flandes</p>
+      <h1>Asesoría telefónica</h1>
+    </div>
+    <button type="button" class="tema" id="tema" aria-label="Cambiar a modo oscuro" title="Modo oscuro"></button>
+  </header>
+
+  <main id="app" class="app" aria-live="polite">
+    <!-- 1. ENTRADA -->
+    <section class="vista activa" id="v-entrada" data-titulo="Entrar">
+      <div class="tarjeta heroe">
+        <p class="heroe__lead">Te llamamos a la hora que escojas para resolver tus dudas de impuestos.</p>
+        <ul class="pasos">
+          <li><span>1</span>Escribe tu documento</li>
+          <li><span>2</span>Cuéntanos tu caso</li>
+          <li><span>3</span>Escoge día y hora</li>
+        </ul>
+        <p class="proximo" id="proximo" hidden></p>
+      </div>
+      <form class="tarjeta" id="f-doc" novalidate autocomplete="off">
+        <label class="campo">
+          <span>Número de documento (cédula o NIT, sin puntos ni dígito de verificación)</span>
+          <input id="doc" inputmode="numeric" pattern="[0-9 .-]*" placeholder="Ej: 1106123456" autocomplete="off" required>
+        </label>
+        <p class="error" id="doc-err" hidden></p>
+        <button type="submit" class="btn btn--marca btn--grande" id="b-doc"><span>Continuar</span></button>
+      </form>
+    </section>
+
+    <!-- 2. CÓDIGO -->
+    <section class="vista" id="v-codigo" data-titulo="Código">
+      <form class="tarjeta" id="f-cod" novalidate autocomplete="off">
+        <h2>Revisa tu WhatsApp</h2>
+        <p class="nota">Ya tienes solicitudes con nosotros. Para cuidar tus datos te enviamos un código de 6 dígitos al <b id="cod-tel"></b>.</p>
+        <label class="campo">
+          <span>Código</span>
+          <input id="cod" class="codigo" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" placeholder="••••••" required>
+        </label>
+        <p class="error" id="cod-err" hidden></p>
+        <button type="submit" class="btn btn--marca btn--grande" id="b-cod"><span>Entrar</span></button>
+        <div class="fila-btn">
+          <button type="button" class="btn btn--plano" id="b-reenviar" disabled>Reenviar código</button>
+          <button type="button" class="btn btn--plano" data-ir="v-entrada">Otro documento</button>
+        </div>
+        <p class="nota nota--chica">¿Cambiaste de número? Escríbenos al WhatsApp de la Secretaría de Hacienda o acércate a la Alcaldía para actualizarlo.</p>
+      </form>
+    </section>
+
+    <!-- 3. MIS ASESORÍAS -->
+    <section class="vista" id="v-mias" data-titulo="Mis asesorías">
+      <div class="tarjeta">
+        <h2>Mis asesorías</h2>
+        <p class="nota" id="mias-nota"></p>
+        <button type="button" class="btn btn--marca btn--grande" id="b-nueva"><span>Pedir una asesoría</span></button>
+      </div>
+      <div id="mias-lista" class="lista"></div>
+      <div class="fila-btn"><button type="button" class="btn btn--plano" id="b-salir">Salir</button></div>
+    </section>
+
+    <!-- 4. FORMULARIO (4 pasos) -->
+    <section class="vista" id="v-form" data-titulo="Solicitud">
+      <ol class="progreso" id="progreso" aria-label="Pasos">
+        <li data-p="1">Tus datos</li><li data-p="2">Tu caso</li><li data-p="3">Día y hora</li><li data-p="4">Confirmar</li>
+      </ol>
+
+      <div class="paso" data-paso="1">
+        <div class="tarjeta">
+          <h2 id="form-titulo">Tus datos</h2>
+          <label class="campo"><span>Nombre completo</span>
+            <input id="nombre" autocomplete="name" maxlength="80" placeholder="Nombres y apellidos" class="mayus"></label>
+          <label class="campo"><span>Celular para la llamada (10 dígitos)</span>
+            <input id="tel" inputmode="numeric" pattern="[0-9 .-]*" autocomplete="tel-national" placeholder="3XX XXX XXXX"></label>
+          <label class="campo"><span>Confirma el celular</span>
+            <input id="tel2" inputmode="numeric" pattern="[0-9 .-]*" autocomplete="off" placeholder="Escríbelo otra vez"></label>
+          <label class="campo"><span>¿Dónde está el predio o el comercio? (barrio, vereda o conjunto)</span>
+            <input id="ubic" maxlength="120" placeholder="Ej: Barrio Centro" class="mayus"></label>
+          <p class="error" id="p1-err" hidden></p>
+        </div>
+      </div>
+
+      <div class="paso" data-paso="2" hidden>
+        <div class="tarjeta">
+          <h2>Tu caso</h2>
+          <label class="campo"><span>Asunto</span>
+            <select id="asunto"></select></label>
+          <div class="campo">
+            <span>Cuéntanos tu solicitud</span>
+            <div class="dictado" id="dictado">
+              <textarea id="detalle" rows="6" maxlength="2000" placeholder="Escribe o dicta con el micrófono lo que necesitas…"></textarea>
+              <p class="dictado__vivo" id="dic-vivo" hidden></p>
+              <div class="dictado__acc">
+                <button type="button" class="btn btn--mic" id="b-mic" hidden aria-pressed="false"><span class="ico ico--mic"></span><span class="t">Dictar</span></button>
+                <button type="button" class="btn btn--suave" id="b-ordenar" hidden><span class="ico ico--magia"></span><span>Ordenar mi texto</span></button>
+                <span class="cuenta" id="det-cuenta">0 / 2000</span>
+              </div>
+              <p class="nota nota--chica" id="dic-ayuda"></p>
+            </div>
+          </div>
+          <div class="propuesta" id="propuesta" hidden>
+            <p class="propuesta__t">Así quedaría tu texto ordenado:</p>
+            <p class="propuesta__txt" id="prop-txt"></p>
+            <div class="fila-btn">
+              <button type="button" class="btn btn--marca" id="b-prop-si">Usar este texto</button>
+              <button type="button" class="btn btn--plano" id="b-prop-no">Dejar el mío</button>
+            </div>
+          </div>
+          <p class="error" id="p2-err" hidden></p>
+        </div>
+      </div>
+
+      <div class="paso" data-paso="3" hidden>
+        <div class="tarjeta">
+          <h2>¿Qué día podemos llamarte?</h2>
+          <div class="dias" id="dias" role="radiogroup" aria-label="Día"></div>
+          <h2 class="h2-sep">¿En qué horario?</h2>
+          <div class="franjas" id="franjas" role="radiogroup" aria-label="Horario"></div>
+          <div class="horas" id="horas" role="radiogroup" aria-label="Hora"></div>
+          <p class="nota nota--chica" id="cupos-nota"></p>
+          <p class="error" id="p3-err" hidden></p>
+        </div>
+      </div>
+
+      <div class="paso" data-paso="4" hidden>
+        <div class="tarjeta">
+          <h2>Revisa y confirma</h2>
+          <dl class="resumen" id="resumen"></dl>
+          <label class="check">
+            <input type="checkbox" id="autoriza">
+            <span>Autorizo a la Alcaldía de Flandes – Secretaría de Hacienda a tratar mis datos personales (nombre, documento, celular, ubicación y lo que cuento en mi solicitud) para agendar y atender esta asesoría y contactarme por llamada y WhatsApp, conforme a la <b>Ley 1581 de 2012</b> y sus decretos reglamentarios. Sé que puedo conocer, actualizar, rectificar o pedir que se supriman mis datos ante la Secretaría de Hacienda.</span>
+          </label>
+          <p class="error" id="p4-err" hidden></p>
+        </div>
+      </div>
+
+      <div class="navpasos">
+        <button type="button" class="btn btn--plano" id="b-atras">Atrás</button>
+        <button type="button" class="btn btn--marca" id="b-sig"><span>Siguiente</span></button>
+      </div>
+    </section>
+
+    <!-- 5. LISTO -->
+    <section class="vista" id="v-listo" data-titulo="Listo">
+      <div class="tarjeta listo">
+        <div class="listo__ico" aria-hidden="true"></div>
+        <h2 id="listo-t">¡Quedó programada!</h2>
+        <p class="nota" id="listo-sub"></p>
+        <dl class="resumen" id="listo-res"></dl>
+        <div class="fila-btn">
+          <button type="button" class="btn btn--suave" id="b-ics">Agregar a mi calendario</button>
+          <button type="button" class="btn btn--marca" id="b-ver-mias">Mis asesorías</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p>Secretaría de Hacienda · Alcaldía de Flandes · Tolima</p>
+    <p class="pie__firma">Oscar Polania · Experto en soluciones digitales · <span id="ver"></span></p>
+  </footer>
+
+  <div class="capa" id="capa" hidden role="dialog" aria-modal="true" aria-labelledby="capa-t">
+    <div class="capa__velo" data-cerrar></div>
+    <div class="capa__hoja">
+      <h3 id="capa-t"></h3>
+      <div id="capa-c"></div>
+      <div class="fila-btn" id="capa-b"></div>
+    </div>
+  </div>
+  <div class="aviso" id="aviso" role="status" hidden></div>
+
+  <script src="js/web.js"></script>
+</body>
+</html>
