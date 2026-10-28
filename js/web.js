@@ -10,7 +10,7 @@
        (nodo público asesorias/publico, sin datos personales) con un GET
        directo; mientras se escoge la hora quedan EN VIVO (EventSource).
        Solo si Firebase no responde se usa asecupos.
-     · Documento: 1 (asecentrar) · Código: 1 (asecodigo, trae todo)
+     · Documento: 1 (asecentrar: si ya tiene historia trae datos y Mis asesorías)
      · Confirmar: 1 (asecrear / aseeditar) · Calificar: 1.
    Reglas
      · Botón ocupado desde el primer toque; cada escritura lleva su rid y
@@ -246,7 +246,12 @@
         S.llave = r.llave; S.datos = null; S.lista = []; S.puedeNueva = true;
         tomarCfg(r.cfg);
         nuevaSolicitud();
+      } else if (r.estado === 'VERIFICADO' || r.lista) {
+        /* entra solo con el documento: datos y Mis asesorías en el mismo viaje */
+        tomarPaquete(r);
+        ir('v-mias', true);
       } else {
+        /* respaldo solo mientras el backend viejo siga publicado (pedía código) */
         $('cod-tel').textContent = r.tel || 'celular registrado';
         $('cod').value = ''; mostrarError('cod-err', '');
         cuentaAtras(r.espera || 60);
